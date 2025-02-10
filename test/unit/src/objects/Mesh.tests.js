@@ -9,6 +9,7 @@ import { MeshBasicMaterial } from '../../../../src/materials/MeshBasicMaterial.j
 import { Vector2 } from '../../../../src/math/Vector2.js';
 import { Vector3 } from '../../../../src/math/Vector3.js';
 import { DoubleSide } from '../../../../src/constants.js';
+import { Material } from '../../../../src/materials/Material.js';
 
 export default QUnit.module( 'Objects', () => {
 
@@ -73,6 +74,23 @@ export default QUnit.module( 'Objects', () => {
 
 		} );
 
+		QUnit.test( 'copy/material', ( assert ) => {
+
+			// Material arrays are cloned
+			const mesh1 = new Mesh();
+			mesh1.material = [ new Material() ];
+
+			const copy1 = mesh1.clone();
+			assert.notStrictEqual( mesh1.material, copy1.material );
+
+			// Non arrays are not cloned
+			const mesh2 = new Mesh();
+			mesh1.material = new Material();
+			const copy2 = mesh2.clone();
+			assert.strictEqual( mesh2.material, copy2.material );
+
+		} );
+
 		QUnit.todo( 'updateMorphTargets', ( assert ) => {
 
 			assert.ok( false, 'everything\'s gonna be alright' );
@@ -102,12 +120,12 @@ export default QUnit.module( 'Objects', () => {
 
 			const intersection = intersections[ 0 ];
 
-			assert.equal( intersection.object, mesh, 'intersction object' );
-			assert.equal( intersection.distance, 1, 'intersction distance' );
-			assert.equal( intersection.faceIndex, 1, 'intersction face index' );
-			assert.deepEqual( intersection.face, { a: 0, b: 2, c: 1 }, 'intersction vertex indices' );
-			assert.deepEqual( intersection.point, new Vector3( 0.25, 0.25, 0 ), 'intersction point' );
-			assert.deepEqual( intersection.uv, new Vector2( 0.75, 0.75 ), 'intersction uv' );
+			assert.equal( intersection.object, mesh, 'intersection object' );
+			assert.equal( intersection.distance, 1, 'intersection distance' );
+			assert.equal( intersection.faceIndex, 1, 'intersection face index' );
+			assert.deepEqual( intersection.face, { a: 0, b: 2, c: 1 }, 'intersection vertex indices' );
+			assert.deepEqual( intersection.point, new Vector3( 0.25, 0.25, 0 ), 'intersection point' );
+			assert.deepEqual( intersection.uv, new Vector2( 0.75, 0.75 ), 'intersection uv' );
 
 		} );
 
