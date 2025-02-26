@@ -25,10 +25,11 @@
 
 		<code>
 		const lod = new THREE.LOD();
+		const material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 
 		//Create spheres with 3 levels of detail and create new LOD levels for them
 		for( let i = 0; i < 3; i++ ) {
-			const geometry = new THREE.IcosahedronGeometry( 10, 3 - i )
+			const geometry = new THREE.IcosahedronGeometry( 10, 3 - i );
 			const mesh = new THREE.Mesh( geometry, material );
 			lod.addLevel( mesh, i * 75 );
 		}
@@ -73,22 +74,27 @@
 		<p>See the base [page:Object3D] class for common methods.</p>
 
 		<h3>
-			[method:this addLevel]( [param:Object3D object], [param:Float distance],
-			[param:Float hysteresis] )
+			[method:this addLevel]( [param:Object3D object], [param:Float distance], [param:Float hysteresis] )
 		</h3>
 		<p>
 			[page:Object3D object] - The [page:Object3D] to display at this level.<br />
 			[page:Float distance] - The distance at which to display this level of
-			detail. Default 0.0.<br />
+			detail. Default `0.0`.<br />
 			[page:Float hysteresis] - Threshold used to avoid flickering at LOD
-			boundaries, as a fraction of distance. Default 0.0.<br /><br />
+			boundaries, as a fraction of distance. Default `0.0`.<br /><br />
 
 			Adds a mesh that will display at a certain distance and greater. Typically
 			the further away the distance, the lower the detail on the mesh.
 		</p>
+		<h3>
+			[method:Boolean removeLevel]( [param:Float distance])
+		</h3>
+		<p>
+			distance - Distance of the level to delete.<br /><br />
 
-		<h3>[method:LOD clone]()</h3>
-		<p>Returns a clone of this LOD object with its associated levels.</p>
+			Removes an existing level, based on the distance from the camera.
+			Returns `true` when the level has been removed. Otherwise `false`.
+		</p>
 
 		<h3>[method:Integer getCurrentLevel]()</h3>
 		<p>Get the currently active LOD level. As index of the levels array.</p>
