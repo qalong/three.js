@@ -165,6 +165,10 @@
 THREE.ColorManagement.enabled = true;
 	</code>
 
+	<p>
+		THREE.ColorManagement is enabled by default.
+	</p>
+
 	<ul>
 		<li>
 			<b>Materials, lights, and shaders:</b> Colors in materials, lights, and shaders store
@@ -210,13 +214,9 @@ THREE.ColorManagement.enabled = true;
 
 	<p>
 		Output to a display device, image, or video may involve conversion from the open domain
-		Linear-sRGB working color space to another color space. This conversion may be performed in
-		the main render pass ([page:WebGLRenderer.outputColorSpace]), or during post-processing.
+		Linear-sRGB working color space to another color space. The conversion is defined by
+		([page:WebGLRenderer.outputColorSpace]). When using post-processing, this requires OutputPass.
 	</p>
-
-	<code>
-renderer.outputColorSpace = THREE.SRGBColorSpace; // optional with post-processing
-	</code>
 
 	<ul>
 		<li>
@@ -244,7 +244,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace; // optional with post-processi
 
 	<p>
 		Custom materials based on [page:ShaderMaterial] and [page:RawShaderMaterial] have to implement their own output color space conversion.
-		For instances of `ShaderMaterial`, adding the `encodings_fragment` shader chunk to the fragment shader's `main()` function should be sufficient.
+		For instances of `ShaderMaterial`, adding the `colorspace_fragment` shader chunk to the fragment shader's `main()` function should be sufficient.
 	</p>
 
 	<h2>Working with THREE.Color instances</h2>
