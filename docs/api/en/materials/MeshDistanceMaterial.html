@@ -82,22 +82,20 @@
 		<p>
 			How much the displacement map affects the mesh (where black is no
 			displacement, and white is maximum displacement). Without a displacement
-			map set, this value is not applied. Default is 1.
+			map set, this value is not applied. Default is `1`.
 		</p>
 
 		<h3>[property:Float displacementBias]</h3>
 		<p>
 			The offset of the displacement map's values on the mesh's vertices.
-			Without a displacement map set, this value is not applied. Default is 0.
+			The bias is added to the scaled sample of the displacement map.
+			Without a displacement map set, this value is not applied. Default is `0`.
 		</p>
-
-		<h3>[property:Boolean fog]</h3>
-		<p>Whether the material is affected by fog. Default is `false`.</p>
 
 		<h3>[property:Texture map]</h3>
 		<p>
 			The color map. May optionally include an alpha channel, typically combined
-			with [page:Material.transparent .transparent] or [page:Material.alphaTest .alphaTest]. 
+			with [page:Material.transparent .transparent] or [page:Material.alphaTest .alphaTest].
 			Default is null.
 		</p>
 
