@@ -36,7 +36,7 @@
 		<h3>[name]( [param:Object parameters] )</h3>
 		<p>
 			[page:Object parameters] - (可选)用于定义材质外观的对象，具有一个或多个属性。
-			材质的任何属性都可以从此处传入(包括从[page:Material] 和 [page:ShaderMaterial]继承的任何属性)。<br /><br />
+			材质的任何属性都可以从此处传入(包括从[page:Material]继承的任何属性)。<br /><br />
 
 			属性[page:Hexadecimal color]例外，其可以作为十六进制字符串传递，默认情况下为 *0xffffff*（白色），
 			内部调用[page:Color.set](color)。
@@ -61,11 +61,11 @@
 		<p>材质的颜色([page:Color])，默认值为白色 (0xffffff)。 [page:.map]会和 color 相乘。</p>
 
 		<h3>[property:Boolean fog]</h3>
-		<p>材质是否受雾影响。默认为*true*。</p>
+		<p>材质是否受雾影响。默认为 *true*。</p>
 
 		<h3>[property:Boolean isSpriteMaterial]</h3>
 		<p>
-			Read-only flag to check if a given object is of type [name].
+			只读标志，用于检查给定对象是否属于 [name]。
 		</p>
 
 		<h3>[property:Texture map]</h3>

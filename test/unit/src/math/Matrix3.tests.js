@@ -2,8 +2,9 @@
 
 import { Matrix3 } from '../../../../src/math/Matrix3.js';
 import { Matrix4 } from '../../../../src/math/Matrix4.js';
+import { Vector2 } from '../../../../src/math/Vector2.js';
 
-function matrixEquals3( a, b, tolerance ) {
+function matrixEquals3( b, a, tolerance ) {
 
 	tolerance = tolerance || 0.0001;
 	if ( a.elements.length != b.elements.length ) {
@@ -14,7 +15,7 @@ function matrixEquals3( a, b, tolerance ) {
 
 	for ( let i = 0, il = a.elements.length; i < il; i ++ ) {
 
-		const delta = a.elements[ i ] - b.elements[ i ];
+		const delta = Math.abs( a.elements[ i ] - b.elements[ i ] );
 		if ( delta > tolerance ) {
 
 			return false;
@@ -68,6 +69,19 @@ export default QUnit.module( 'Maths', () => {
 			assert.ok( b.elements[ 8 ] == 8 );
 
 			assert.ok( ! matrixEquals3( a, b ), 'Passed!' );
+
+			const c = new Matrix3( 0, 1, 2, 3, 4, 5, 6, 7, 8 );
+			assert.ok( c.elements[ 0 ] == 0 );
+			assert.ok( c.elements[ 1 ] == 3 );
+			assert.ok( c.elements[ 2 ] == 6 );
+			assert.ok( c.elements[ 3 ] == 1 );
+			assert.ok( c.elements[ 4 ] == 4 );
+			assert.ok( c.elements[ 5 ] == 7 );
+			assert.ok( c.elements[ 6 ] == 2 );
+			assert.ok( c.elements[ 7 ] == 5 );
+			assert.ok( c.elements[ 8 ] == 8 );
+
+			assert.ok( ! matrixEquals3( a, c ), 'Passed!' );
 
 		} );
 
@@ -435,10 +449,17 @@ export default QUnit.module( 'Maths', () => {
 
 		} );
 
-		QUnit.todo( 'makeTranslation', ( assert ) => {
+		QUnit.test( 'makeTranslation', ( assert ) => {
 
-			// makeTranslation( x, y )
-			assert.ok( false, 'everything\'s gonna be alright' );
+			const a = new Matrix3();
+			const b = new Vector2( 1, 2 );
+			const c = new Matrix3().set( 1, 0, 1, 0, 1, 2, 0, 0, 1 );
+
+			a.makeTranslation( b.x, b.y );
+			assert.ok( matrixEquals3( a, c ), 'Check translation result' );
+
+			a.makeTranslation( b );
+			assert.ok( matrixEquals3( a, c ), 'Check translation result' );
 
 		} );
 

@@ -4,19 +4,40 @@ import { DataTexture } from '../textures/DataTexture.js';
 import { Loader } from './Loader.js';
 
 /**
- * Abstract Base class to load generic binary textures formats (rgbe, hdr, ...)
+ * Abstract base class for loading binary texture formats RGBE, EXR or TGA.
+ * Textures are internally loaded via {@link FileLoader}.
  *
- * Sub classes have to implement the parse() method which will be used in load().
+ * Derived classes have to implement the `parse()` method which holds the parsing
+ * for the respective format.
+ *
+ * @abstract
+ * @augments Loader
  */
-
 class DataTextureLoader extends Loader {
 
+	/**
+	 * Constructs a new data texture loader.
+	 *
+	 * @param {LoadingManager} [manager] - The loading manager.
+	 */
 	constructor( manager ) {
 
 		super( manager );
 
 	}
 
+	/**
+	 * Starts loading from the given URL and passes the loaded data texture
+	 * to the `onLoad()` callback. The method also returns a new texture object which can
+	 * directly be used for material creation. If you do it this way, the texture
+	 * may pop up in your scene once the respective loading process is finished.
+	 *
+	 * @param {string} url - The path/URL of the file to be loaded. This can also be a data URI.
+	 * @param {function(DataTexture)} onLoad - Executed when the loading process has been finished.
+	 * @param {onProgressCallback} onProgress - Executed while the loading is in progress.
+	 * @param {onErrorCallback} onError - Executed when errors occur.
+	 * @return {DataTexture} The data texture.
+	 */
 	load( url, onLoad, onProgress, onError ) {
 
 		const scope = this;
@@ -30,9 +51,26 @@ class DataTextureLoader extends Loader {
 		loader.setWithCredentials( scope.withCredentials );
 		loader.load( url, function ( buffer ) {
 
-			const texData = scope.parse( buffer );
+			let texData;
 
-			if ( ! texData ) return;
+			try {
+
+				texData = scope.parse( buffer );
+
+			} catch ( error ) {
+
+				if ( onError !== undefined ) {
+
+					onError( error );
+
+				} else {
+
+					console.error( error );
+					return;
+
+				}
+
+			}
 
 			if ( texData.image !== undefined ) {
 
@@ -57,10 +95,6 @@ class DataTextureLoader extends Loader {
 			if ( texData.colorSpace !== undefined ) {
 
 				texture.colorSpace = texData.colorSpace;
-
-			} else if ( texData.encoding !== undefined ) { // @deprecated, r152
-
-				texture.encoding = texData.encoding;
 
 			}
 

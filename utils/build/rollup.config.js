@@ -1,25 +1,5 @@
 import terser from '@rollup/plugin-terser';
-
-function addons() {
-
-	return {
-
-		transform( code, id ) {
-
-			if ( /\/examples\/jsm\//.test( id ) === false ) return;
-
-			code = code.replace( 'build/three.module.js', 'src/Three.js' );
-
-			return {
-				code: code,
-				map: null
-			};
-
-		}
-
-	};
-
-}
+import MagicString from 'magic-string';
 
 export function glsl() {
 
@@ -29,7 +9,9 @@ export function glsl() {
 
 			if ( /\.glsl.js$/.test( id ) === false ) return;
 
-			code = code.replace( /\/\* glsl \*\/\`(.*?)\`/sg, function ( match, p1 ) {
+			code = new MagicString( code );
+
+			code.replace( /\/\* glsl \*\/\`(.*?)\`/sg, function ( match, p1 ) {
 
 				return JSON.stringify(
 					p1
@@ -43,8 +25,8 @@ export function glsl() {
 			} );
 
 			return {
-				code: code,
-				map: null
+				code: code.toString(),
+				map: code.generateMap()
 			};
 
 		}
@@ -59,68 +41,149 @@ function header() {
 
 		renderChunk( code ) {
 
-			return `/**
+			code = new MagicString( code );
+
+			code.prepend( `/**
  * @license
- * Copyright 2010-2023 Three.js Authors
+ * Copyright 2010-2025 Three.js Authors
  * SPDX-License-Identifier: MIT
+ */\n` );
+
+			return {
+				code: code.toString(),
+				map: code.generateMap()
+			};
+
+		}
+
+	};
+
+}
+
+/**
+ * @type {Array<import('rollup').RollupOptions>}
  */
-${ code }`;
-
-		}
-
-	};
-
-}
-
-function deprecationWarning() {
-
-	return {
-
-		renderChunk( code ) {
-
-			return `console.warn( 'Scripts "build/three.js" and "build/three.min.js" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation' );
-${ code }`;
-
-		}
-
-	};
-
-}
-
 const builds = [
 	{
-		input: 'src/Three.js',
+		input: {
+			'three.core.js': 'src/Three.Core.js',
+			'three.webgpu.nodes.js': 'src/Three.WebGPU.Nodes.js',
+		},
 		plugins: [
-			addons(),
 			glsl(),
 			header()
 		],
+		preserveEntrySignatures: 'allow-extension',
 		output: [
 			{
 				format: 'esm',
-				file: 'build/three.module.js'
+				dir: 'build',
+				minifyInternalExports: false,
+				entryFileNames: '[name]',
 			}
 		]
 	},
 	{
-		input: 'src/Three.js',
+		input: {
+			'three.core.js': 'src/Three.Core.js',
+			'three.module.js': 'src/Three.js',
+			'three.webgpu.js': 'src/Three.WebGPU.js',
+		},
 		plugins: [
-			addons(),
 			glsl(),
-			terser(),
 			header()
 		],
+		preserveEntrySignatures: 'allow-extension',
 		output: [
 			{
 				format: 'esm',
-				file: 'build/three.module.min.js'
+				dir: 'build',
+				minifyInternalExports: false,
+				entryFileNames: '[name]',
 			}
 		]
 	},
 	{
+		input: {
+			'three.tsl.js': 'src/Three.TSL.js',
+		},
+		plugins: [
+			header()
+		],
+		preserveEntrySignatures: 'allow-extension',
+		output: [
+			{
+				format: 'esm',
+				dir: 'build',
+				minifyInternalExports: false,
+				entryFileNames: '[name]',
+			}
+		],
+		external: [ 'three/webgpu' ]
+	},
+	{
+		input: {
+			'three.core.min.js': 'src/Three.Core.js',
+			'three.webgpu.nodes.min.js': 'src/Three.WebGPU.Nodes.js',
+		},
+		plugins: [
+			glsl(),
+			header(),
+			terser()
+		],
+		preserveEntrySignatures: 'allow-extension',
+		output: [
+			{
+				format: 'esm',
+				dir: 'build',
+				minifyInternalExports: false,
+				entryFileNames: '[name]',
+			}
+		]
+	},
+	{
+		input: {
+			'three.core.min.js': 'src/Three.Core.js',
+			'three.module.min.js': 'src/Three.js',
+			'three.webgpu.min.js': 'src/Three.WebGPU.js',
+		},
+		plugins: [
+			glsl(),
+			header(),
+			terser()
+		],
+		preserveEntrySignatures: 'allow-extension',
+		output: [
+			{
+				format: 'esm',
+				dir: 'build',
+				minifyInternalExports: false,
+				entryFileNames: '[name]',
+			}
+		]
+	},
+	{
+		input: {
+			'three.tsl.min.js': 'src/Three.TSL.js'
+		},
+		plugins: [
+			header(),
+			terser()
+		],
+		preserveEntrySignatures: 'allow-extension',
+		output: [
+			{
+				format: 'esm',
+				dir: 'build',
+				minifyInternalExports: false,
+				entryFileNames: '[name]',
+			}
+		],
+		external: [ 'three/webgpu' ]
+	},
+	{
 		input: 'src/Three.js',
 		plugins: [
-			addons(),
 			glsl(),
 			header()
 		],
@@ -132,42 +195,7 @@ const builds = [
 				indent: '\t'
 			}
 		]
-	},
-
-	{ // @deprecated, r150
-		input: 'src/Three.js',
-		plugins: [
-			addons(),
-			glsl(),
-			header(),
-			deprecationWarning()
-		],
-		output: [
-			{
-				format: 'umd',
-				name: 'THREE',
-				file: 'build/three.js',
-				indent: '\t'
-			}
-		]
-	},
-	{ // @deprecated, r150
-		input: 'src/Three.js',
-		plugins: [
-			addons(),
-			glsl(),
-			terser(),
-			header(),
-			deprecationWarning()
-		],
-		output: [
-			{
-				format: 'umd',
-				name: 'THREE',
-				file: 'build/three.min.js'
-			}
-		]
 	}
 ];
 
-export default ( args ) => args.configOnlyModule ? builds[ 0 ] : builds;
+export default ( args ) => args.configOnlyModule ? builds.slice( 0, 4 ) : builds;
